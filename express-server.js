@@ -1,24 +1,51 @@
-require("dotenv").config()
+/**
+ * Express Server Setup
+ * --------------------
+ * This is the main entry point for the KGL REST API backend.
+ * 
+ * Features:
+ * - Connects to MongoDB using Mongoose
+ * - Configures CORS and JSON body parsing
+ * - Registers routers for Users, Sales, Credit Sales, Procurement
+ * - Serves Swagger API documentation
+ * - Starts the server on port 3000
+ */
+
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const bcrypt = require("bcryptjs");
+
+// Routers
 const procurementRoutes = require("./routers/procurement");
 const salesRoutes = require("./routers/sales"); 
 const usersRoutes = require("./routers/users");
 const creditSalesRouter = require("./routers/creditsales");
+
+// Swagger setup
 const swaggerUi = require('swagger-ui-express');
 const swaggerJSDoc = require('swagger-jsdoc');
+
 const app = express();
 
+/* ==========================
+   MIDDLEWARE
+========================== */
+// Enable Cross-Origin Resource Sharing
 app.use(cors());
+
+// Parse JSON request bodies
 app.use(express.json());
-app.use(express.json()) 
+
+// Serve static files if needed (e.g., images, public assets)
+app.use(express.static("public"));
 
 
-// Swagger definition
+/* ==========================
+   SWAGGER API DOCUMENTATION
+========================== */
 const swaggerDefinition = {
-    openapi: '3.0.0', // Specify the OpenAPI version
+    openapi: '3.0.0', // OpenAPI version
     info: {
         title: 'KGL REST API Documentation',
         version: '1.0.5',
@@ -32,28 +59,39 @@ const swaggerDefinition = {
     ],
 };
 
-// Options for swagger-jsdoc
+// Swagger options specifying where to read route files
 const options = {
-    swaggerDefinition, // Use the swaggerDefinition object defined above
-    apis: ['./routers/*.js'], // Specify the path to your API route files
+    swaggerDefinition,
+    apis: ['./routers/*.js'], // Path to route files for annotations
 };
-app.use(express.static("public"))
-// Create the Swagger specification
+
+// Create Swagger specification
 const swaggerSpec = swaggerJSDoc(options);
 
-// Serve Swagger UI
+// Serve Swagger UI at /api-docs
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-  
-mongoose.connect(process.env.MONGODB_URI )
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.error("MongoDB error:", err));
-  
-// Routes
+
+
+/* ==========================
+   DATABASE CONNECTION
+========================== */
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log("MongoDB Connected"))
+    .catch(err => console.error("MongoDB error:", err));
+
+
+/* ==========================
+   ROUTES
+========================== */
 app.use("/procurement", procurementRoutes);
 app.use("/sales", salesRoutes); 
-app.use("/users",usersRoutes);
+app.use("/users", usersRoutes);
 app.use("/creditsales", creditSalesRouter);
 
-// Start server
-app.listen(3000, () => console.log("Server running on port 3000"));
+
+/* ==========================
+   START SERVER
+========================== */
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
  
