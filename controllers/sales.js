@@ -1,4 +1,5 @@
 const Sale = require("../modules/sales");
+const Procurement = require("../modules/procurement");
 
  const getAllSales = async (req, res) => {
   try {
@@ -39,14 +40,60 @@ const getSaleById = async (req, res) => {
     });
   }
 }
+
 const createSale = async (req, res) => {
   try {
-    const data = await Sale.create(req.body);
+    const {
+      produceName,
+      branch,
+      tonnage,
+      sellingPrice,
+      amountPaid,
+      buyerName,
+      salesAgentName,
+      date,
+      time
+    } = req.body;
+
+    // Find stock for this produce and branch
+    const stock = await Procurement.findOne({ nameOfProduce: produceName, branch });
+
+    if (!stock) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found in stock for this branch"
+      });
+    }
+
+    // Check if enough stock
+    if (stock.tonnage < tonnage) {
+      return res.status(400).json({
+        success: false,
+        message: `Not enough stock available. Current stock: ${stock.tonnage} kg`
+      });
+    }
+
+    // Reduce stock
+    stock.tonnage -= tonnage;
+    await stock.save();
+
+    // Record the sale
+    const sale = await Sale.create({
+      produceName,
+      branch,
+      tonnage,
+      sellingPrice,
+      amountPaid,
+      buyerName,
+      salesAgentName,
+      date,
+      time
+    });
 
     res.status(201).json({
       success: true,
-      data
-    });  
+      data: sale
+    });
 
   } catch (err) {
     res.status(400).json({
@@ -54,7 +101,7 @@ const createSale = async (req, res) => {
       message: err.message
     });
   }
-}
+};
 const updateSale = async (req, res) => {
   try {
     const updated = await Sale.findByIdAndUpdate(

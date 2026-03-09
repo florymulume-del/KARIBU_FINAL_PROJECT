@@ -3,12 +3,15 @@ const router = express.Router();
 const CreditSale = require("../modules/creditsales");
 const auth = require("../middleware/auth");
 const { salesOnly } = require("../middleware/roles");
+const validate = require("../middleware/validate");
+const { createCreditSaleSchema } = require("../validation/creditsales");
+
 const {getAllCreditSale,createCreditSale,getCreditSaleById,updateCreditSale,deleteCreditSale} = require("../controllers/creditsales.js");
 
 // ==============================
 // CREATE CREDIT SALE
 // ==============================
-router.post("/", auth, salesOnly,createCreditSale);
+router.post("/", auth, salesOnly,validate(createCreditSaleSchema),createCreditSale);
 // ==============================
 // READ ALL CREDIT SALES
 // ==============================
