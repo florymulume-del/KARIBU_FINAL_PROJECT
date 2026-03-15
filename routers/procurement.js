@@ -27,7 +27,7 @@ const auth = require("../middleware/auth");
 const validate = require("../middleware/validate");
 
 // Validation schema for creating procurement
-const { createProcurementSchema } = require("../validation/procurement");
+// const { createProcurementSchema } = require("../validation/procurement");
 
 // Role-based access middleware
 const { managerOnly } = require("../middleware/roles");
@@ -65,7 +65,7 @@ router.get("/:id", auth, managerOnly, getProcurementById);
    - managerOnly
    - validate(createProcurementSchema)
 ========================================== */
-router.post("/", auth, managerOnly, validate(createProcurementSchema), createProcurement);
+router.post("/", auth, managerOnly,createProcurement);
 
 
 

@@ -36,11 +36,11 @@ const createCreditSaleSchema = Joi.object({
 
   // Amount of produce in kilograms
   tonnage: Joi.number()
-    .min(1)
+    .min(100)
     .required()
     .messages({
       "number.base": "Tonnage must be a number",
-      "number.min": "Tonnage must be at least 1 kg",
+      "number.min": "Tonnage must be at least 1000kg",
       "any.required": "Tonnage is required"
     }),
 

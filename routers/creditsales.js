@@ -32,9 +32,11 @@ const { salesOnly } = require("../middleware/roles");
 
 // Request validation middleware
 const validate = require("../middleware/validate");
+// Validation schema for creating sales
+// const { createCreditSaleSchema  } = require("../validation/creditsales");
 
-// Validation schema
-const { createCreditSaleSchema } = require("../validation/creditsales");
+
+
 
 // Controller functions
 const {
@@ -56,7 +58,7 @@ const {
    - salesOnly
    - validate(createCreditSaleSchema)
 ========================================== */
-router.post("/", auth, salesOnly, validate(createCreditSaleSchema), createCreditSale);
+router.post("/", auth, salesOnly, createCreditSale);
 
 
 

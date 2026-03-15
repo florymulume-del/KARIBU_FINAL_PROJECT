@@ -27,7 +27,7 @@ const createSaleSchema = Joi.object({
     }),
 
   // Branch where sale occurs (uncomment and modify if you want to restrict branches)
-  // branch: Joi.string().valid("Maganjo", "Matugga").required(),
+   branch: Joi.string().valid("Maganjo", "Matugga").required(),
 
   // Amount of produce in kilograms
   tonnage: Joi.number()
@@ -39,8 +39,8 @@ const createSaleSchema = Joi.object({
       "any.required": "Tonnage is required"
     }),
 
-  // Selling price per unit (optional, can add min limit)
-  // sellingPrice: Joi.number().min(1000).required(),
+   //Selling price per unit (optional, can add min limit)
+  sellingPrice: Joi.number().min(1000).required(),
 
   // Amount paid by the buyer
   amountPaid: Joi.number()
